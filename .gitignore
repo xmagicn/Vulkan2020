@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# External Directories
+external/
+
 # Compiled Object files
 *.slo
 *.lo
@@ -8,10 +11,11 @@
 *.obj
 
 # SPIR_V shader bytecode
-.spv
+*.spv
 
 # VS 2019 generated files
-.user
+*.user
+.vs/
 
 # Precompiled Headers
 *.gch
