@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="VulkanAPI.cpp">
+      <Filter>VulkanAPI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Vulkan2020App.h" />
+    <ClInclude Include="VulkanAPI.h">
+      <Filter>VulkanAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="FileUtils.h" />
+    <ClInclude Include="ModelClass.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureClass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{caf55e0e-884d-4fd1-84d1-292fb875a363}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VulkanAPI">
+      <UniqueIdentifier>{566247cf-0acf-4f9f-9441-9f004b69fa2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{434398f8-6c32-4a12-9cc5-609ccac94a97}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\shader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\shader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
