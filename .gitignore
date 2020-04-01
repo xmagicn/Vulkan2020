@@ -7,6 +7,9 @@
 *.o
 *.obj
 
+# SPIR_V shader bytecode
+.spv
+
 # Precompiled Headers
 *.gch
 *.pch
