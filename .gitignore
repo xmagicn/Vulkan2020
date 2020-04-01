@@ -10,6 +10,9 @@
 # SPIR_V shader bytecode
 .spv
 
+# VS 2019 generated files
+.user
+
 # Precompiled Headers
 *.gch
 *.pch
