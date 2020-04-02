@@ -8,7 +8,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
 constexpr const char* TEXTURE_PATH = "../assets/textures/";
+constexpr const char* MODEL_PATH = "../assets/models/";
 
 static std::vector<char> ReadFile( const std::string& filename )
 {
@@ -30,7 +34,6 @@ static std::vector<char> ReadFile( const std::string& filename )
 static stbi_uc* LoadTexture( const char* filename, int& texWidth, int& texHeight, int& texChannels )
 {
 	stbi_uc* pixels = stbi_load( ( std::string( TEXTURE_PATH ) + filename ).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha );
-	//VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 	assert( pixels && "failed to load texture image!" );
 

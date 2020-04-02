@@ -40,14 +40,14 @@ const std::vector<Vertex> vertices =
 	{{ 0.5, 0.5 }, {0.0, 1.0, 0.0}},
 	{{ -0.5, 0.5 }, {0.0, 0.0, 1.0}}
 };
-//*/
+
 /* Blue/Green triangle
 const std::vector<Vertex> vertices = {
 	{{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
 	{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
 	{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
 };
-//*/
+
 //* Rainbow square
 const std::vector<Vertex> vertices = 
 {
@@ -62,13 +62,13 @@ const std::vector<Vertex> vertices =
 	{ {-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} },
 
 };
-//*/
 
 const std::vector<uint16_t> indexes =
 {
 	0, 1, 2, 2, 3, 0,
 	4, 5, 6, 6, 7, 4,
 };
+//*/
 
 class VulkanAPI
 {
@@ -150,8 +150,9 @@ private:
 
 	void CreateTextureImage();
 
+	void LoadModel();
 	void CreateVertexBuffer( const std::vector<Vertex>& vertexData );
-	void CreateIndexBuffer( const std::vector<uint16_t>& indexData );
+	void CreateIndexBuffer( const std::vector<uint32_t>& indexData );
 	
 	void CreateDepthResources();
 	VkFormat FindDepthFormat();
@@ -218,6 +219,9 @@ private:
 	VkImage DepthImage;
 	VkDeviceMemory DepthImageMemory;
 	VkImageView DepthImageView;
+
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indexes;
 
 	bool bFrameBufferResized = false;
 

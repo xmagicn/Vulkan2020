@@ -1,5 +1,8 @@
 #include "VulkanAPI.h"
 
+#pragma warning( disable : 4189 )
+#pragma warning( disable : 4127 )
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -12,6 +15,7 @@
 #include <string>
 #include <algorithm>
 #include <cassert>
+#include <unordered_map>
 
 #include "FileUtils.h"
 
@@ -85,6 +89,7 @@ void VulkanAPI::Init()
 	CreateTextureImage();
 	CreateTextureImageView();
 	CreateTextureSampler();
+	LoadModel();
 	CreateVertexBuffer( vertices );
 	CreateIndexBuffer( indexes );
 	CreateUniformBuffers();
@@ -998,7 +1003,7 @@ void VulkanAPI::CreateCommandBuffers()
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers( commandBuffers[i], 0, 1, vertexBuffers, offsets );
 
-			vkCmdBindIndexBuffer( commandBuffers[i], IndexBuffer, 0, VK_INDEX_TYPE_UINT16 );
+			vkCmdBindIndexBuffer( commandBuffers[i], IndexBuffer, 0, VK_INDEX_TYPE_UINT32 );
 			
 			vkCmdBindDescriptorSets( commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &DescriptorSets[i], 0, nullptr );
 			vkCmdDrawIndexed( commandBuffers[i], static_cast< uint32_t >( indexes.size() ), 1, 0, 0, 0 );
@@ -1084,7 +1089,7 @@ void VulkanAPI::CreateTextureImage()
 	int texHeight;
 	int texChannels;
 
-	stbi_uc* pixels = LoadTexture( "statue.jpg", texWidth, texHeight, texChannels );
+	stbi_uc* pixels = LoadTexture( "chaletTex.jpg", texWidth, texHeight, texChannels );
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 	assert( pixels && "failed to load texture image!" );
@@ -1141,6 +1146,52 @@ void VulkanAPI::CreateTextureSampler()
 	assert( VK_SUCCESS == result && "failed to create texture sampler!" );
 }
 
+void VulkanAPI::LoadModel()
+{
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if ( !tinyobj::LoadObj( &attrib, &shapes, &materials, &warn, &err, "../assets/models/chalet.obj" ) )
+	{
+		throw std::runtime_error( warn + err );
+	}
+
+	std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+
+	for ( const auto& shape : shapes )
+	{
+		for ( const auto& index : shape.mesh.indices )
+		{
+			Vertex vertex = {};
+
+			vertex.pos = 
+			{
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2]
+			};
+
+			vertex.uv = 
+			{
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+			};
+
+			vertex.color = { 1.0f, 1.0f, 1.0f };
+
+			if ( uniqueVertices.count( vertex ) == 0 )
+			{
+				uniqueVertices[vertex] = static_cast< uint32_t >( vertices.size() );
+				vertices.push_back( vertex );
+			}
+
+			indexes.push_back( uniqueVertices[vertex] );
+		}
+	}
+}
+
 void VulkanAPI::CreateVertexBuffer( const std::vector<Vertex>& vertexData )
 {
 	assert( !vertexData.empty() && "cannot create vertex buffer from empty data!" );
@@ -1164,7 +1215,7 @@ void VulkanAPI::CreateVertexBuffer( const std::vector<Vertex>& vertexData )
 	vkFreeMemory( vulkanDevice, stagingBufferMemory, nullptr );
 }
 
-void VulkanAPI::CreateIndexBuffer( const std::vector<uint16_t>& indexData )
+void VulkanAPI::CreateIndexBuffer( const std::vector<uint32_t>& indexData )
 {
 	assert( !indexData.empty() && "cannot create index buffer from empty data!" );
 

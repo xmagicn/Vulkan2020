@@ -2,6 +2,12 @@
 
 #include <glm/glm.hpp>
 
+
+#pragma warning( disable : 4201 )
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
+
 struct Vertex
 {
 	glm::vec3 pos;
@@ -40,7 +46,25 @@ struct Vertex
 
 		return AttributeDescriptions;
 	}
+
+	bool operator==( const Vertex& other ) const
+	{
+		return pos == other.pos && color == other.color && uv == other.uv;
+	}
 };
+
+namespace std
+{
+	template<> struct hash<Vertex>
+	{
+		size_t operator()( Vertex const& vertex ) const
+		{
+			return ( ( hash<glm::vec3>()( vertex.pos ) ^
+				( hash<glm::vec3>()( vertex.color ) << 1 ) ) >> 1 ) ^
+				( hash<glm::vec2>()( vertex.uv ) << 1 );
+		}
+	};
+}
 
 class Model
 {
