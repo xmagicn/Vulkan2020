@@ -51,16 +51,23 @@ const std::vector<Vertex> vertices = {
 //* Rainbow square
 const std::vector<Vertex> vertices = 
 {
-	{ {-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f} },
-	{ { 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f} },
-	{ { 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
-	{ {-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }
+	{ {-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f} },
+	{ { 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f} },
+	{ { 0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+	{ {-0.5f,  0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} },
+
+	{ {-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f} },
+	{ { 0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f} },
+	{ { 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },
+	{ {-0.5f,  0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} },
+
 };
 //*/
 
 const std::vector<uint16_t> indexes =
 {
 	0, 1, 2, 2, 3, 0,
+	4, 5, 6, 6, 7, 4,
 };
 
 class VulkanAPI
@@ -121,7 +128,7 @@ private:
 	VkPresentModeKHR ChooseSwapPresentMode( const std::vector<VkPresentModeKHR>& availablePresentModes );
 	VkExtent2D ChooseSwapExtent( const VkSurfaceCapabilitiesKHR& capabilities );
 
-	VkImageView CreateImageView( VkImage image, VkFormat format );
+	VkImageView CreateImageView( VkImage image, VkFormat format, VkImageAspectFlags aspectFlags );
 	void CreateImageViews();
 	
 	void CreateRenderPass();
@@ -146,6 +153,12 @@ private:
 	void CreateVertexBuffer( const std::vector<Vertex>& vertexData );
 	void CreateIndexBuffer( const std::vector<uint16_t>& indexData );
 	
+	void CreateDepthResources();
+	VkFormat FindDepthFormat();
+	bool HasStencilComponent( VkFormat format );
+
+	VkFormat FindSupportedFormat( const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features );
+
 	void CreateUniformBuffers();
 	void CreateDescriptorPool();
 	void CreateDescriptorSets();
@@ -201,6 +214,10 @@ private:
 
 	VkDescriptorPool DescriptorPool;
 	std::vector<VkDescriptorSet> DescriptorSets;
+
+	VkImage DepthImage;
+	VkDeviceMemory DepthImageMemory;
+	VkImageView DepthImageView;
 
 	bool bFrameBufferResized = false;
 
