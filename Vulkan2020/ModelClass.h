@@ -1,12 +1,16 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
+#include <array>
 
 #pragma warning( disable : 4201 )
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
+
+#include "vulkan/vulkan.h"
+
+class VulkanGraphicsInstance;
 
 struct Vertex
 {
@@ -69,8 +73,37 @@ namespace std
 class Model
 {
 public:
+	void Initialize( VulkanGraphicsInstance* pInstance );
+	void BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, VkDescriptorSet* pDescriptorSet );
+	void Cleanup();
+
+private:
+	void CreateTextureImage();
+	void CreateTextureImageView();
+	void CreateTextureSampler();
+
+	void LoadModel();
+
+	void CreateVertexBuffer();
+	void CreateIndexBuffer();
+
+	VulkanGraphicsInstance* pGraphicsInstance;
+
+public:
 	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
 
 	VkBuffer VertexBuffer;
 	VkDeviceMemory VertexBufferMemory;
+	VkBuffer IndexBuffer;
+	VkDeviceMemory IndexBufferMemory;
+
+	std::vector<VkBuffer> UniformBuffers;
+	std::vector<VkDeviceMemory> UniformBuffersMemory;
+
+	uint32_t MipLevels;
+	VkImage TextureImage;
+	VkDeviceMemory TextureImageMemory;
+	VkImageView TextureImageView;
+	VkSampler TextureSampler;
 };

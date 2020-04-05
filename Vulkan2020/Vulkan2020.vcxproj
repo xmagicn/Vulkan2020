@@ -155,15 +155,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FileUtils.cpp" />
+    <ClCompile Include="GLFWRenderWindow.cpp" />
+    <ClCompile Include="GraphicsInstance.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="VulkanAPI.cpp" />
+    <ClCompile Include="VulkanGraphicsInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileUtils.h" />
+    <ClInclude Include="GLFWRenderWindowClass.h" />
+    <ClInclude Include="GraphicsInstance.h" />
     <ClInclude Include="ModelClass.h" />
+    <ClInclude Include="RenderWindowClass.h" />
     <ClInclude Include="TextureClass.h" />
     <ClInclude Include="Vulkan2020App.h" />
     <ClInclude Include="VulkanAPI.h" />
+    <ClInclude Include="VulkanGraphicsInstance.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\shader.frag">

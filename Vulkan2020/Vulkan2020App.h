@@ -14,6 +14,9 @@
 #include <set>
 
 #include "VulkanAPI.h"
+#include "VulkanGraphicsInstance.h"
+
+#include "GLFWRenderWindowClass.h"
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
@@ -24,11 +27,14 @@ public:
 	void Run()
 	{
 		InitWindow();
+		InitGraphicsInstance();
+		/*
 		SubmitExtensions();
 		CreateVulkanInstance();
 		CreateSurface();
 		InitVulkan();
 		SubmitExtent();
+		//*/
 		MainLoop();
 		Cleanup();
 	}
@@ -38,6 +44,9 @@ private:
 
 	VulkanAPI VulkanLayer;
 
+	GLFWRenderWindow* pRenderWindow;
+	VulkanGraphicsInstance* pGraphicsInstance;
+
 	size_t currentFrame = 0;
 
 	bool framebufferResized = false;
@@ -45,13 +54,18 @@ private:
 private:
 	void InitWindow()
 	{
-		glfwInit();
+		pRenderWindow = new GLFWRenderWindow();
+		pRenderWindow->InitWindow();
+	}
 
-		glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
+	void InitGraphicsInstance()
+	{
+		pGraphicsInstance = new VulkanGraphicsInstance();
 
-		window = glfwCreateWindow( WIDTH, HEIGHT, "Vulkan", nullptr, nullptr );
-		glfwSetWindowUserPointer( window, this );
-		glfwSetFramebufferSizeCallback( window, FramebufferResizeCallback );
+		auto extensions = GetRequiredExtensions();
+		pGraphicsInstance->PreInitInstance( extensions );
+
+		pGraphicsInstance->InitInstance( pRenderWindow );
 	}
 
 	static void FramebufferResizeCallback( GLFWwindow* window, int, int )
@@ -72,22 +86,24 @@ private:
 
 	void MainLoop()
 	{
-		while ( !glfwWindowShouldClose( window ) )
+		while ( !pRenderWindow->WindowShouldClose() )
 		{
-			glfwPollEvents();
-			VulkanLayer.Draw();
+			pRenderWindow->PollEvents();
+			pGraphicsInstance->DrawFrame();
 		}
 
-		VulkanLayer.WaitForFrameComplete();
+		pGraphicsInstance->WaitForFrameComplete();
 	}
 
 	void Cleanup()
 	{
-		VulkanLayer.Cleanup();
+		pGraphicsInstance->DestroyInstance();
+		delete pGraphicsInstance;
+		pGraphicsInstance = nullptr;
 
-		glfwDestroyWindow( window );
-
-		glfwTerminate();
+		pRenderWindow->TerminateWindow();
+		delete pRenderWindow;
+		pRenderWindow = nullptr;
 	}
 
 	void SubmitExtensions()

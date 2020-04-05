@@ -5,6 +5,19 @@
     <ClCompile Include="VulkanAPI.cpp">
       <Filter>VulkanAPI</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsInstance.cpp">
+      <Filter>VulkanAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanGraphicsInstance.cpp">
+      <Filter>VulkanAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="GLFWRenderWindow.cpp">
+      <Filter>GLFW</Filter>
+    </ClCompile>
+    <ClCompile Include="FileUtils.cpp" />
+    <ClCompile Include="Model.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vulkan2020App.h" />
@@ -16,6 +29,18 @@
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="TextureClass.h" />
+    <ClInclude Include="GraphicsInstance.h">
+      <Filter>VulkanAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanGraphicsInstance.h">
+      <Filter>VulkanAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderWindowClass.h">
+      <Filter>GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="GLFWRenderWindowClass.h">
+      <Filter>GLFW</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -26,6 +51,9 @@
     </Filter>
     <Filter Include="Model">
       <UniqueIdentifier>{434398f8-6c32-4a12-9cc5-609ccac94a97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLFW">
+      <UniqueIdentifier>{93017fa8-1038-419b-8f73-3ba3d3692f8f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

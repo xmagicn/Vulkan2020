@@ -86,7 +86,7 @@ void VulkanAPI::Init()
 	CreateColorResources();
 	CreateDepthResources();
 	CreateFramebuffers();
-	CreateDepthResources();
+	//CreateDepthResources();
 	CreateTextureImage();
 	CreateTextureImageView();
 	CreateTextureSampler();
@@ -373,6 +373,7 @@ void VulkanAPI::PickPhysicalDevice()
 
 void VulkanAPI::CreateLogicalDevice()
 {
+	/*
 	QueueFamilyIndices indices = FindQueueFamilies( physicalDevice );
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -421,10 +422,12 @@ void VulkanAPI::CreateLogicalDevice()
 
 	vkGetDeviceQueue( vulkanDevice, indices.graphicsFamily.value(), 0, &graphicsQueue );
 	vkGetDeviceQueue( vulkanDevice, indices.presentFamily.value(), 0, &presentQueue );
+	//*/
 }
 
 void VulkanAPI::CreateSwapChain()
 {
+	/*
 	SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport( physicalDevice );
 
 	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat( swapChainSupport.formats );
@@ -461,7 +464,6 @@ void VulkanAPI::CreateSwapChain()
 	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	}
-
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
 	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	createInfo.presentMode = presentMode;
@@ -478,6 +480,7 @@ void VulkanAPI::CreateSwapChain()
 
 	swapChainImageFormat = surfaceFormat.format;
 	swapChainExtent = extent;
+	//*/
 }
 
 VkImageView VulkanAPI::CreateImageView( VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels )
@@ -611,8 +614,8 @@ void VulkanAPI::CreateDescriptorSetLayout()
 
 void VulkanAPI::CreateGraphicsPipeline()
 {
-	auto vertShaderCode = ReadFile( "shaders/vert.spv" );
-	auto fragShaderCode = ReadFile( "shaders/frag.spv" );
+	auto vertShaderCode = FileUtils::ReadFile( "shaders/vert.spv" );
+	auto fragShaderCode = FileUtils::ReadFile( "shaders/frag.spv" );
 
 	VkShaderModule vertShaderModule = CreateShaderModule( vertShaderCode );
 	VkShaderModule fragShaderModule = CreateShaderModule( fragShaderCode );
@@ -747,11 +750,11 @@ void VulkanAPI::CreateGraphicsPipeline()
 
 void VulkanAPI::CreateCommandPool()
 {
-	QueueFamilyIndices queueFamilyIndices = FindQueueFamilies( physicalDevice );
+	//QueueFamilyIndices queueFamilyIndices = FindQueueFamilies( physicalDevice );
 
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+	//poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
 	if ( vkCreateCommandPool( vulkanDevice, &poolInfo, nullptr, &commandPool ) != VK_SUCCESS )
 	{
@@ -1217,7 +1220,7 @@ void VulkanAPI::CreateTextureImage()
 	int texHeight;
 	int texChannels;
 
-	stbi_uc* pixels = LoadTexture( "chaletTex.jpg", texWidth, texHeight, texChannels );
+	void* pixels = FileUtils::OpenTexture( "chaletTex.jpg", texWidth, texHeight, texChannels );
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 	MipLevels = static_cast< uint32_t >( std::floor( std::log2( std::max( texWidth, texHeight ) ) ) ) + 1;
 
@@ -1233,7 +1236,7 @@ void VulkanAPI::CreateTextureImage()
 	memcpy( data, pixels, static_cast< size_t >( imageSize ) );
 	vkUnmapMemory( vulkanDevice, stagingBufferMemory );
 
-	stbi_image_free( pixels );
+	FileUtils::CloseTexture( pixels );
 
 	CreateImage( texWidth, texHeight, MipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, TextureImage, TextureImageMemory );
 
@@ -1279,8 +1282,10 @@ void VulkanAPI::CreateTextureSampler()
 	assert( VK_SUCCESS == result && "failed to create texture sampler!" );
 }
 
-void VulkanAPI::LoadModel()
+void VulkanAPI::LoadModel( )
 {
+	FileUtils::LoadModel( "../assets/models/chalet.obj", vertices, indexes );
+	/*
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -1323,6 +1328,7 @@ void VulkanAPI::LoadModel()
 			indexes.push_back( uniqueVertices[vertex] );
 		}
 	}
+	//*/
 }
 
 void VulkanAPI::CreateVertexBuffer( const std::vector<Vertex>& vertexData )
@@ -1373,6 +1379,7 @@ void VulkanAPI::CreateIndexBuffer( const std::vector<uint32_t>& indexData )
 
 void VulkanAPI::CreateUniformBuffers()
 {
+	/*
 	VkDeviceSize bufferSize = sizeof( UniformBufferObject );
 
 	UniformBuffers.resize( swapChainImages.size() );
@@ -1382,6 +1389,7 @@ void VulkanAPI::CreateUniformBuffers()
 	{
 		CreateBuffer( bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, UniformBuffers[i], UniformBuffersMemory[i] );
 	}
+	//*/
 }
 
 void VulkanAPI::CreateDepthResources()
@@ -1465,7 +1473,7 @@ void VulkanAPI::CreateDescriptorSets()
 		VkDescriptorBufferInfo bufferInfo = {};
 		bufferInfo.buffer = UniformBuffers[i];
 		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof( UniformBufferObject );
+		//bufferInfo.range = sizeof( UniformBufferObject );
 
 		VkDescriptorImageInfo imageInfo = {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -1494,8 +1502,9 @@ void VulkanAPI::CreateDescriptorSets()
 	}
 }
 
-void VulkanAPI::UpdateUniformBuffer( uint32_t currentImage )
+void VulkanAPI::UpdateUniformBuffer( uint32_t )
 {
+	/*
 	// Rotate code
 	static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -1513,6 +1522,7 @@ void VulkanAPI::UpdateUniformBuffer( uint32_t currentImage )
 	vkMapMemory( vulkanDevice, UniformBuffersMemory[currentImage], 0, sizeof( ubo ), 0, &data );
 	memcpy( data, &ubo, sizeof( ubo ) );
 	vkUnmapMemory( vulkanDevice, UniformBuffersMemory[currentImage] );
+	//*/
 }
 
 VkSurfaceFormatKHR VulkanAPI::ChooseSwapSurfaceFormat( const std::vector<VkSurfaceFormatKHR>& availableFormats )
@@ -1561,8 +1571,9 @@ VkExtent2D VulkanAPI::ChooseSwapExtent( const VkSurfaceCapabilitiesKHR& capabili
 	}
 }
 
-bool VulkanAPI::IsDeviceSuitable( VkPhysicalDevice device )
+bool VulkanAPI::IsDeviceSuitable( VkPhysicalDevice  )
 {
+	/*
 	QueueFamilyIndices indices = FindQueueFamilies( device );
 
 	bool extensionsSupported = CheckDeviceExtensionSupport( device );
@@ -1578,8 +1589,10 @@ bool VulkanAPI::IsDeviceSuitable( VkPhysicalDevice device )
 	vkGetPhysicalDeviceFeatures( device, &supportedFeatures );
 
 	return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+	//*/
+	return false;
 }
-
+/*
 SwapChainSupportDetails VulkanAPI::QuerySwapChainSupport( VkPhysicalDevice device )
 {
 	SwapChainSupportDetails details;
@@ -1606,7 +1619,7 @@ SwapChainSupportDetails VulkanAPI::QuerySwapChainSupport( VkPhysicalDevice devic
 
 	return details;
 }
-
+//*/
 bool VulkanAPI::CheckDeviceExtensionSupport( VkPhysicalDevice device )
 {
 	uint32_t extensionCount;
@@ -1648,7 +1661,7 @@ VkSampleCountFlagBits VulkanAPI::GetMaxUsableSampleCount()
 
 	return VK_SAMPLE_COUNT_1_BIT;
 }
-
+/*
 QueueFamilyIndices VulkanAPI::FindQueueFamilies( VkPhysicalDevice device )
 {
 	QueueFamilyIndices indices;
@@ -1685,7 +1698,7 @@ QueueFamilyIndices VulkanAPI::FindQueueFamilies( VkPhysicalDevice device )
 
 	return indices;
 }
-
+//*/
 bool VulkanAPI::CheckValidationLayerSupport()
 {
 	uint32_t layerCount;

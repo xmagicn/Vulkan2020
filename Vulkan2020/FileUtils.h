@@ -1,41 +1,17 @@
 #pragma once
 
-#include <vector>
-#include <iostream>
-#include <fstream>
 #include <string>
+#include <vector>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
+#include "ModelClass.h"
 
 constexpr const char* TEXTURE_PATH = "../assets/textures/";
 constexpr const char* MODEL_PATH = "../assets/models/";
 
-static std::vector<char> ReadFile( const std::string& filename )
+struct FileUtils
 {
-	std::ifstream file( filename, std::ios::ate | std::ios::binary );
-
-	assert( file.is_open() && "failed to open file!" );
-
-	size_t fileSize = ( size_t )file.tellg();
-	std::vector<char> buffer( fileSize );
-
-	file.seekg( 0 );
-	file.read( buffer.data(), fileSize );
-
-	file.close();
-
-	return buffer;
-}
-
-static stbi_uc* LoadTexture( const char* filename, int& texWidth, int& texHeight, int& texChannels )
-{
-	stbi_uc* pixels = stbi_load( ( std::string( TEXTURE_PATH ) + filename ).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha );
-
-	assert( pixels && "failed to load texture image!" );
-
-	return pixels;
-}
+	static std::vector<char> ReadFile( const std::string& filename );
+	static void* OpenTexture( const char* filename, int& texWidth, int& texHeight, int& texChannels );
+	static void CloseTexture( void* );
+	static void LoadModel( const char* filename, std::vector<Vertex>& uniqueVertices, std::vector<uint32_t>& indices );
+};

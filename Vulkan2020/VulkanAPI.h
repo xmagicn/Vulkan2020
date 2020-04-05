@@ -8,6 +8,7 @@
 
 #include "ModelClass.h"
 
+/*
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
@@ -32,6 +33,7 @@ struct UniformBufferObject
 	glm::mat4 view;
 	glm::mat4 proj;
 };
+//*/
 
 /* Rainbow triangle
 const std::vector<Vertex> vertices =
@@ -117,9 +119,9 @@ private:
 
 	void PickPhysicalDevice();
 	bool IsDeviceSuitable( VkPhysicalDevice device );
-	QueueFamilyIndices FindQueueFamilies( VkPhysicalDevice device );
+//	QueueFamilyIndices FindQueueFamilies( VkPhysicalDevice device );
 	bool CheckDeviceExtensionSupport( VkPhysicalDevice device );
-	SwapChainSupportDetails QuerySwapChainSupport( VkPhysicalDevice device );
+//	SwapChainSupportDetails QuerySwapChainSupport( VkPhysicalDevice device );
 
 	void CreateLogicalDevice();
 
@@ -151,7 +153,7 @@ private:
 	void GenerateMipmaps( VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels );
 	void CreateTextureImage();
 
-	void LoadModel();
+	void LoadModel( );
 	void CreateVertexBuffer( const std::vector<Vertex>& vertexData );
 	void CreateIndexBuffer( const std::vector<uint32_t>& indexData );
 	
