@@ -137,6 +137,8 @@ public:
 	void CreateFramebuffers();
 	void CreateDescriptorSets();
 
+	void CreateImageSamplerDescriptorSet( std::vector<VkDescriptorSet>& DescriptorSetVector, VkImageView TextureImageView, VkSampler TextureSampler );
+
 /////////////////////////////////////////
 // Cleanup Functions
 /////////////////////////////////////////

@@ -74,7 +74,7 @@ class Model
 {
 public:
 	void Initialize( VulkanGraphicsInstance* pInstance );
-	void BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, VkDescriptorSet* pDescriptorSet );
+	void BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, size_t idx );
 	void Cleanup();
 
 private:
@@ -86,6 +86,9 @@ private:
 
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();
+
+public:
+	void CreateDescriptorSets();
 
 	VulkanGraphicsInstance* pGraphicsInstance;
 
@@ -106,4 +109,6 @@ public:
 	VkDeviceMemory TextureImageMemory;
 	VkImageView TextureImageView;
 	VkSampler TextureSampler;
+
+	std::vector<VkDescriptorSet> DescriptorSets;
 };

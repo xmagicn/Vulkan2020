@@ -66,11 +66,12 @@ bool VulkanGraphicsInstance::InitInstanceInternal( RenderWindow* pRenderWindow )
 	CreateDepthResources();
 	CreateFramebuffers();
 
-	InitializeRenderObjects();
-
 	CreateUniformBuffers();
 	CreateDescriptorPool();
-	CreateDescriptorSets();
+	//CreateDescriptorSets();
+
+	InitializeRenderObjects();
+
 	CreateCommandBuffers();
 	CreateSyncObjects();
 
@@ -1106,6 +1107,11 @@ void VulkanGraphicsInstance::CreateDescriptorPool()
 
 void VulkanGraphicsInstance::CreateDescriptorSets()
 {
+	TEST_MODEL.CreateDescriptorSets();
+}
+
+void VulkanGraphicsInstance::CreateImageSamplerDescriptorSet( std::vector<VkDescriptorSet>& DescriptorSetVector, VkImageView TextureImageView, VkSampler TextureSampler )
+{
 	std::vector<VkDescriptorSetLayout> layouts( swapChainImages.size(), descriptorSetLayout );
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -1113,8 +1119,8 @@ void VulkanGraphicsInstance::CreateDescriptorSets()
 	allocInfo.descriptorSetCount = static_cast< uint32_t >( swapChainImages.size() );
 	allocInfo.pSetLayouts = layouts.data();
 
-	DescriptorSets.resize( swapChainImages.size() );
-	VkResult result = vkAllocateDescriptorSets( vulkanDevice, &allocInfo, DescriptorSets.data() );
+	DescriptorSetVector.resize( swapChainImages.size() );
+	VkResult result = vkAllocateDescriptorSets( vulkanDevice, &allocInfo, DescriptorSetVector.data() );
 	assert( VK_SUCCESS == result && "failed to allocate descriptor sets!" );
 
 	for ( size_t i = 0; i < swapChainImages.size(); i++ )
@@ -1124,32 +1130,28 @@ void VulkanGraphicsInstance::CreateDescriptorSets()
 		bufferInfo.offset = 0;
 		bufferInfo.range = sizeof( UniformBufferObject );
 
-		//*
 		VkDescriptorImageInfo imageInfo = {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = TEST_MODEL.TextureImageView;
-		imageInfo.sampler = TEST_MODEL.TextureSampler;
-		//*/
+		imageInfo.imageView = TextureImageView;
+		imageInfo.sampler = TextureSampler;
+
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
-		//std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = DescriptorSets[i];
+		descriptorWrites[0].dstSet = DescriptorSetVector[i];
 		descriptorWrites[0].dstBinding = 0;
 		descriptorWrites[0].dstArrayElement = 0;
 		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		descriptorWrites[0].descriptorCount = 1;
 		descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-		//*
 		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = DescriptorSets[i];
+		descriptorWrites[1].dstSet = DescriptorSetVector[i];
 		descriptorWrites[1].dstBinding = 1;
 		descriptorWrites[1].dstArrayElement = 0;
 		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrites[1].descriptorCount = 1;
 		descriptorWrites[1].pImageInfo = &imageInfo;
-		//*/
 
 		vkUpdateDescriptorSets( vulkanDevice, static_cast< uint32_t >( descriptorWrites.size() ), descriptorWrites.data(), 0, nullptr );
 	}
@@ -1194,7 +1196,7 @@ void VulkanGraphicsInstance::CreateCommandBuffers()
 
 		vkCmdBeginRenderPass( commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE );
 
-		TEST_MODEL.BindToCommandBuffer( commandBuffers[i], graphicsPipeline, pipelineLayout, &DescriptorSets[i] );
+		TEST_MODEL.BindToCommandBuffer( commandBuffers[i], graphicsPipeline, pipelineLayout, i );
 
 		vkCmdEndRenderPass( commandBuffers[i] );
 

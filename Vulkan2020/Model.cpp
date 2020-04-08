@@ -5,6 +5,8 @@
 #include "FileUtils.h"
 #include "VulkanGraphicsInstance.h"
 
+#include <chrono>
+
 void Model::Initialize( VulkanGraphicsInstance* pInstance )
 {
 	pGraphicsInstance = pInstance;
@@ -15,10 +17,10 @@ void Model::Initialize( VulkanGraphicsInstance* pInstance )
 	LoadModel();
 	CreateVertexBuffer();
 	CreateIndexBuffer();
-	//CreateUniformBuffers();
+	CreateDescriptorSets();
 }
 
-void Model::BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, VkDescriptorSet* pDescriptorSet )
+void Model::BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, size_t idx )
 {
 	vkCmdBindPipeline( rBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rPipeline );
 
@@ -29,12 +31,25 @@ void Model::BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline
 
 	vkCmdBindIndexBuffer( rBuffer, IndexBuffer, 0, VK_INDEX_TYPE_UINT32 );
 
-	vkCmdBindDescriptorSets( rBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rPipelineLayout, 0, 1, pDescriptorSet, 0, nullptr );
+	vkCmdBindDescriptorSets( rBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rPipelineLayout, 0, 1, &DescriptorSets[idx], 0, nullptr );
 	vkCmdDrawIndexed( rBuffer, static_cast< uint32_t >( indices.size() ), 1, 0, 0, 0 );
 }
 
 void Model::Cleanup()
 {
+
+	vkDestroySampler( *pGraphicsInstance->GetDevice(), TextureSampler, nullptr );
+	vkDestroyImageView( *pGraphicsInstance->GetDevice(), TextureImageView, nullptr );
+	vkDestroyImage( *pGraphicsInstance->GetDevice(), TextureImage, nullptr );
+	vkFreeMemory( *pGraphicsInstance->GetDevice(), TextureImageMemory, nullptr );
+
+	//vkDestroyDescriptorSetLayout( vulkanDevice, descriptorSetLayout, nullptr );
+
+	vkDestroyBuffer( *pGraphicsInstance->GetDevice(), IndexBuffer, nullptr );
+	vkFreeMemory( *pGraphicsInstance->GetDevice(), IndexBufferMemory, nullptr );
+
+	vkDestroyBuffer( *pGraphicsInstance->GetDevice(), VertexBuffer, nullptr );
+	vkFreeMemory( *pGraphicsInstance->GetDevice(), VertexBufferMemory, nullptr );
 
 }
 
@@ -151,4 +166,9 @@ void Model::CreateIndexBuffer()
 
 	vkDestroyBuffer( *pGraphicsInstance->GetDevice(), stagingBuffer, nullptr );
 	vkFreeMemory( *pGraphicsInstance->GetDevice(), stagingBufferMemory, nullptr );
+}
+
+void Model::CreateDescriptorSets()
+{
+	pGraphicsInstance->CreateImageSamplerDescriptorSet( DescriptorSets, TextureImageView, TextureSampler );
 }
