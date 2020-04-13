@@ -123,7 +123,8 @@ void Model::CreateTextureSampler()
 
 void Model::LoadModel()
 {
-	FileUtils::LoadModel( "../assets/models/chalet.obj", vertices, indices );
+	//FileUtils::LoadModel( "../assets/models/chalet.obj", vertices, indices );
+	FileUtils::LoadModel( "../assets/models/Cactus_4.obj", vertices, indices );
 }
 
 void Model::CreateVertexBuffer()

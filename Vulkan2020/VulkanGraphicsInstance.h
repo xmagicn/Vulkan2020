@@ -9,6 +9,8 @@
 
 #include "ModelClass.h"
 
+class Texture;
+
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
@@ -153,9 +155,14 @@ private:
 	void UpdateUniformBuffer( uint32_t );
 
 /////////////////////////////////////////
+// Public Functions
+/////////////////////////////////////////
+public:
+
+/////////////////////////////////////////
 // Debug Functions
 /////////////////////////////////////////
-
+private:
 #ifdef _DEBUG
 	void SetupDebugMessenger();
 	bool CheckValidationLayerSupport();

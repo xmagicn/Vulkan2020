@@ -70,6 +70,14 @@ namespace std
 	};
 }
 
+class VulkanTexture
+{
+public:
+	void CreateTextureImage();
+	void CreateTextureImageView();
+	void CreateTextureSampler();
+};
+
 class Model
 {
 public:
