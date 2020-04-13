@@ -9,6 +9,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+static std::string GetBaseDir( const std::string& filepath )
+{
+	if ( filepath.find_last_of( "/\\" ) != std::string::npos )
+		return filepath.substr( 0, filepath.find_last_of( "/\\" ) );
+	return "";
+}
+
 std::vector<char> FileUtils::ReadFile( const std::string& filename )
 {
 	std::ifstream file( filename, std::ios::ate | std::ios::binary );
@@ -47,7 +54,7 @@ void FileUtils::LoadModel( const char* filename, std::vector<Vertex>& vertices, 
 	std::vector<tinyobj::material_t> materials;
 	std::string warn, err;
 
-	if ( !tinyobj::LoadObj( &attrib, &shapes, &materials, &warn, &err, filename ) )
+	if ( !tinyobj::LoadObj( &attrib, &shapes, &materials, &warn, &err, filename, GetBaseDir( filename ).c_str() ) )
 	{
 		throw std::runtime_error( warn + err );
 	}
@@ -56,6 +63,9 @@ void FileUtils::LoadModel( const char* filename, std::vector<Vertex>& vertices, 
 
 	for ( const auto& shape : shapes )
 	{
+		size_t faceIndex = 0;
+		size_t vertCt = 0;
+
 		for ( const auto& index : shape.mesh.indices )
 		{
 			Vertex vertex = {};
@@ -66,14 +76,35 @@ void FileUtils::LoadModel( const char* filename, std::vector<Vertex>& vertices, 
 				attrib.vertices[3 * index.vertex_index + 1],
 				attrib.vertices[3 * index.vertex_index + 2]
 			};
-			/*
-			vertex.uv =
+
+			if ( !attrib.texcoords.empty() )
 			{
-				attrib.texcoords[2 * index.texcoord_index + 0],
-				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-			};
-			//*/
-			vertex.color = { 1.0f, 1.0f, 1.0f };
+				vertex.uv =
+				{
+					attrib.texcoords[2 * index.texcoord_index + 0],
+					1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+				};
+			}
+
+			if ( !attrib.normals.empty() )
+			{
+				vertex.color = {
+					attrib.normals[3 * index.normal_index + 0],
+					attrib.normals[3 * index.normal_index + 1],
+					attrib.normals[3 * index.normal_index + 2],
+				};
+			}
+
+			if ( !materials.empty() )
+			{
+				size_t matIdx = shape.mesh.material_ids[faceIndex];
+
+				vertex.color = {
+					materials[matIdx].diffuse[0],
+					materials[matIdx].diffuse[1],
+					materials[matIdx].diffuse[2],
+				};
+			}
 
 			if ( uniqueVertices.count( vertex ) == 0 )
 			{
@@ -82,6 +113,12 @@ void FileUtils::LoadModel( const char* filename, std::vector<Vertex>& vertices, 
 			}
 
 			indices.push_back( uniqueVertices[vertex] );
+
+			if ( ++vertCt >= shape.mesh.num_face_vertices[faceIndex] )
+			{
+				faceIndex++;
+				vertCt = 0;
+			}
 		}
 	}
 }

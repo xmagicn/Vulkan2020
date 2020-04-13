@@ -7,6 +7,7 @@
 
 constexpr const char* TEXTURE_PATH = "../assets/textures/";
 constexpr const char* MODEL_PATH = "../assets/models/";
+constexpr const char* MATERIAL_PATH = "../materials/";
 
 struct FileUtils
 {

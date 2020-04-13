@@ -86,20 +86,7 @@ bool VulkanGraphicsInstance::DestroyInstanceInternal()
 
 	TEST_MODEL.Cleanup();
 
-	/*
-	vkDestroySampler( vulkanDevice, TextureSampler, nullptr );
-	vkDestroyImageView( vulkanDevice, TextureImageView, nullptr );
-	vkDestroyImage( vulkanDevice, TextureImage, nullptr );
-	vkFreeMemory( vulkanDevice, TextureImageMemory, nullptr );
-	//*/
 	vkDestroyDescriptorSetLayout( vulkanDevice, descriptorSetLayout, nullptr );
-	/*
-	vkDestroyBuffer( vulkanDevice, IndexBuffer, nullptr );
-	vkFreeMemory( vulkanDevice, IndexBufferMemory, nullptr );
-
-	vkDestroyBuffer( vulkanDevice, VertexBuffer, nullptr );
-	vkFreeMemory( vulkanDevice, VertexBufferMemory, nullptr );
-	//*/
 
 	for ( size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i )
 	{
