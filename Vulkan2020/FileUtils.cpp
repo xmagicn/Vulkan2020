@@ -105,6 +105,14 @@ void FileUtils::LoadModel( const char* filename, std::vector<Vertex>& vertices, 
 					materials[matIdx].diffuse[2],
 				};
 			}
+			else
+			{
+				vertex.color = {
+					1.0f,
+					1.0f,
+					1.0f,
+				};
+			}
 
 			if ( uniqueVertices.count( vertex ) == 0 )
 			{

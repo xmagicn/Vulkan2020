@@ -30,13 +30,6 @@ public:
 	{
 		InitWindow();
 		InitGraphicsInstance();
-		/*
-		SubmitExtensions();
-		CreateVulkanInstance();
-		CreateSurface();
-		InitVulkan();
-		SubmitExtent();
-		//*/
 		MainLoop();
 		Cleanup();
 	}
@@ -152,7 +145,8 @@ private:
 
 	void Init()
 	{
-		pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/Cactus_4.obj" );
+		//pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/Cactus_4.obj" );
+		pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/chalet.obj" );
 	}
 
 	void Update()
