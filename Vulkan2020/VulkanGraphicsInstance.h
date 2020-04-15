@@ -158,7 +158,7 @@ private:
 // Public Functions
 /////////////////////////////////////////
 public:
-	void InitializeModel( Model* pModel, const char* filename );
+	void InitializeModel( Model* pModel, const char* filename, const char* ptexname = "chaletTex.jpg" );
 
 	void FinalizeInit(); // TODO remove
 

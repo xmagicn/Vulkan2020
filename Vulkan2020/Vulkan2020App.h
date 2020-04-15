@@ -145,8 +145,8 @@ private:
 
 	void Init()
 	{
-		//pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/Cactus_4.obj" );
-		pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/chalet.obj" );
+		pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/Cactus_4.obj" );
+		//pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/chalet.obj", "chaletTex.jpg" );
 	}
 
 	void Update()

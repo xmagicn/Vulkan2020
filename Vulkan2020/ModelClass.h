@@ -81,23 +81,33 @@ namespace std
 class VulkanTexture
 {
 public:
-	void CreateTextureImage();
+	void CreateTexture( VulkanGraphicsInstance* pInstance, const char* pfilename );
+	void CleanupTexture();
+
+	void CreateDescriptorSets( std::vector<VkDescriptorSet>& descriptorSets );
+
+private:
+	void CreateTextureImage( const char* pfilename );
 	void CreateTextureImageView();
 	void CreateTextureSampler();
+
+	VulkanGraphicsInstance* pGraphicsInstance;
+
+	uint32_t MipLevels;
+	VkImage TextureImage;
+	VkDeviceMemory TextureImageMemory;
+	VkImageView TextureImageView;
+	VkSampler TextureSampler;
 };
 
 class Model
 {
 public:
-	void Initialize( VulkanGraphicsInstance* pInstance, const char* pfilename );
+	void Initialize( VulkanGraphicsInstance* pInstance, const char* pfilename, const char* ptexname );
 	void BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, size_t idx );
 	void Cleanup();
 
 private:
-	void CreateTextureImage();
-	void CreateTextureImageView();
-	void CreateTextureSampler();
-
 	void LoadModel( const char* pfilename );
 
 	void CreateVertexBuffer();
@@ -120,11 +130,7 @@ public:
 	std::vector<VkBuffer> UniformBuffers;
 	std::vector<VkDeviceMemory> UniformBuffersMemory;
 
-	uint32_t MipLevels;
-	VkImage TextureImage;
-	VkDeviceMemory TextureImageMemory;
-	VkImageView TextureImageView;
-	VkSampler TextureSampler;
-
 	std::vector<VkDescriptorSet> DescriptorSets;
+
+	VulkanTexture* pTexture = nullptr;
 };

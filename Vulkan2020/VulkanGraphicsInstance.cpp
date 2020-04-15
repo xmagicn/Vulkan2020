@@ -1482,9 +1482,9 @@ void VulkanGraphicsInstance::UpdateUniformBuffer( uint32_t currentImage )
 // Public Functions
 //////////////////////////////
 
-void VulkanGraphicsInstance::InitializeModel( Model* pModel, const char* filename )
+void VulkanGraphicsInstance::InitializeModel( Model* pModel, const char* filename, const char* ptexname )
 {
-	pModel->Initialize( this, filename );
+	pModel->Initialize( this, filename, ptexname );
 
 	renderObjects.push_back( pModel );
 }

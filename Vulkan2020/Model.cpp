@@ -7,59 +7,30 @@
 
 #include <chrono>
 
-void Model::Initialize( VulkanGraphicsInstance* pInstance, const char* pfilename )
+void VulkanTexture::CreateTexture( VulkanGraphicsInstance* pInstance, const char* pfilename )
 {
 	pGraphicsInstance = pInstance;
 
-	CreateTextureImage();
+	CreateTextureImage( pfilename );
 	CreateTextureImageView();
 	CreateTextureSampler();
-	LoadModel( pfilename );
-	CreateVertexBuffer();
-	CreateIndexBuffer();
-	CreateDescriptorSets();
 }
 
-void Model::BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, size_t idx )
+void VulkanTexture::CleanupTexture()
 {
-	vkCmdBindPipeline( rBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rPipeline );
-
-	
-	VkBuffer vertexBuffers[] = { VertexBuffer };
-	VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers( rBuffer, 0, 1, vertexBuffers, offsets );
-
-	vkCmdBindIndexBuffer( rBuffer, IndexBuffer, 0, VK_INDEX_TYPE_UINT32 );
-
-	vkCmdBindDescriptorSets( rBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rPipelineLayout, 0, 1, &DescriptorSets[idx], 0, nullptr );
-	vkCmdDrawIndexed( rBuffer, static_cast< uint32_t >( indices.size() ), 1, 0, 0, 0 );
-}
-
-void Model::Cleanup()
-{
-
 	vkDestroySampler( *pGraphicsInstance->GetDevice(), TextureSampler, nullptr );
 	vkDestroyImageView( *pGraphicsInstance->GetDevice(), TextureImageView, nullptr );
 	vkDestroyImage( *pGraphicsInstance->GetDevice(), TextureImage, nullptr );
 	vkFreeMemory( *pGraphicsInstance->GetDevice(), TextureImageMemory, nullptr );
-
-	//vkDestroyDescriptorSetLayout( vulkanDevice, descriptorSetLayout, nullptr );
-
-	vkDestroyBuffer( *pGraphicsInstance->GetDevice(), IndexBuffer, nullptr );
-	vkFreeMemory( *pGraphicsInstance->GetDevice(), IndexBufferMemory, nullptr );
-
-	vkDestroyBuffer( *pGraphicsInstance->GetDevice(), VertexBuffer, nullptr );
-	vkFreeMemory( *pGraphicsInstance->GetDevice(), VertexBufferMemory, nullptr );
-
 }
 
-void Model::CreateTextureImage()
+void VulkanTexture::CreateTextureImage( const char* pfilename )
 {
 	int texWidth;
 	int texHeight;
 	int texChannels;
 
-	void* pixels = FileUtils::OpenTexture( "chaletTex.jpg", texWidth, texHeight, texChannels );
+	void* pixels = FileUtils::OpenTexture( pfilename, texWidth, texHeight, texChannels );
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 	MipLevels = static_cast< uint32_t >( std::floor( std::log2( std::max( texWidth, texHeight ) ) ) ) + 1;
 
@@ -90,12 +61,12 @@ void Model::CreateTextureImage()
 	vkFreeMemory( *pGraphicsInstance->GetDevice(), stagingBufferMemory, nullptr );
 }
 
-void Model::CreateTextureImageView()
+void VulkanTexture::CreateTextureImageView()
 {
 	TextureImageView = pGraphicsInstance->CreateImageView( TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, MipLevels );
 }
 
-void Model::CreateTextureSampler()
+void VulkanTexture::CreateTextureSampler()
 {
 	VkSamplerCreateInfo samplerInfo = {};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -119,6 +90,61 @@ void Model::CreateTextureSampler()
 
 	VkResult result = vkCreateSampler( *pGraphicsInstance->GetDevice(), &samplerInfo, nullptr, &TextureSampler );
 	assert( VK_SUCCESS == result && "failed to create texture sampler!" );
+}
+
+void VulkanTexture::CreateDescriptorSets( std::vector<VkDescriptorSet>& descriptorSets )
+{
+	pGraphicsInstance->CreateImageSamplerDescriptorSet( descriptorSets, TextureImageView, TextureSampler );
+}
+
+void Model::Initialize( VulkanGraphicsInstance* pInstance, const char* pfilename, const char* ptexname )
+{
+	pGraphicsInstance = pInstance;
+
+	//if ( strcmp( "", ptexname ) != 0 )
+	{
+		pTexture = new VulkanTexture();
+		pTexture->CreateTexture(  pGraphicsInstance, ptexname );
+	}
+
+	LoadModel( pfilename );
+	CreateVertexBuffer();
+	CreateIndexBuffer();
+	CreateDescriptorSets();
+}
+
+void Model::BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, size_t idx )
+{
+	vkCmdBindPipeline( rBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rPipeline );
+
+	
+	VkBuffer vertexBuffers[] = { VertexBuffer };
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers( rBuffer, 0, 1, vertexBuffers, offsets );
+
+	vkCmdBindIndexBuffer( rBuffer, IndexBuffer, 0, VK_INDEX_TYPE_UINT32 );
+
+	vkCmdBindDescriptorSets( rBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rPipelineLayout, 0, 1, &DescriptorSets[idx], 0, nullptr );
+	vkCmdDrawIndexed( rBuffer, static_cast< uint32_t >( indices.size() ), 1, 0, 0, 0 );
+}
+
+void Model::Cleanup()
+{
+	//vkDestroyDescriptorSetLayout( vulkanDevice, descriptorSetLayout, nullptr );
+	if ( nullptr != pTexture )
+	{
+		pTexture->CleanupTexture();
+
+		delete pTexture;
+		pTexture = nullptr;
+	}
+
+	vkDestroyBuffer( *pGraphicsInstance->GetDevice(), IndexBuffer, nullptr );
+	vkFreeMemory( *pGraphicsInstance->GetDevice(), IndexBufferMemory, nullptr );
+
+	vkDestroyBuffer( *pGraphicsInstance->GetDevice(), VertexBuffer, nullptr );
+	vkFreeMemory( *pGraphicsInstance->GetDevice(), VertexBufferMemory, nullptr );
+
 }
 
 void Model::LoadModel( const char* pfilename )
@@ -171,5 +197,8 @@ void Model::CreateIndexBuffer()
 
 void Model::CreateDescriptorSets()
 {
-	pGraphicsInstance->CreateImageSamplerDescriptorSet( DescriptorSets, TextureImageView, TextureSampler );
+	if ( pTexture != nullptr )
+	{
+		pTexture->CreateDescriptorSets( DescriptorSets );
+	}
 }
