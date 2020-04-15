@@ -7,14 +7,14 @@
 
 #include <chrono>
 
-void Model::Initialize( VulkanGraphicsInstance* pInstance )
+void Model::Initialize( VulkanGraphicsInstance* pInstance, const char* pfilename )
 {
 	pGraphicsInstance = pInstance;
 
 	CreateTextureImage();
 	CreateTextureImageView();
 	CreateTextureSampler();
-	LoadModel();
+	LoadModel( pfilename );
 	CreateVertexBuffer();
 	CreateIndexBuffer();
 	CreateDescriptorSets();
@@ -121,10 +121,10 @@ void Model::CreateTextureSampler()
 	assert( VK_SUCCESS == result && "failed to create texture sampler!" );
 }
 
-void Model::LoadModel()
+void Model::LoadModel( const char* pfilename )
 {
 	//FileUtils::LoadModel( "../assets/models/chalet.obj", vertices, indices );
-	FileUtils::LoadModel( "../assets/models/Cactus_4.obj", vertices, indices );
+	FileUtils::LoadModel( pfilename, vertices, indices );
 }
 
 void Model::CreateVertexBuffer()

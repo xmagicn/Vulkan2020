@@ -89,7 +89,7 @@ public:
 class Model
 {
 public:
-	void Initialize( VulkanGraphicsInstance* pInstance );
+	void Initialize( VulkanGraphicsInstance* pInstance, const char* pfilename );
 	void BindToCommandBuffer( VkCommandBuffer& rBuffer, VkPipeline& rPipeline, VkPipelineLayout& rPipelineLayout, size_t idx );
 	void Cleanup();
 
@@ -98,7 +98,7 @@ private:
 	void CreateTextureImageView();
 	void CreateTextureSampler();
 
-	void LoadModel();
+	void LoadModel( const char* pfilename );
 
 	void CreateVertexBuffer();
 	void CreateIndexBuffer();

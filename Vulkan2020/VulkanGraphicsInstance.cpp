@@ -68,14 +68,15 @@ bool VulkanGraphicsInstance::InitInstanceInternal( RenderWindow* pRenderWindow )
 
 	CreateUniformBuffers();
 	CreateDescriptorPool();
-	//CreateDescriptorSets();
-
-	InitializeRenderObjects();
-
-	CreateCommandBuffers();
-	CreateSyncObjects();
 
 	return output;
+}
+
+void VulkanGraphicsInstance::FinalizeInit()
+{
+	CreateCommandBuffers();
+
+	CreateSyncObjects();
 }
 
 bool VulkanGraphicsInstance::DestroyInstanceInternal()
@@ -83,8 +84,6 @@ bool VulkanGraphicsInstance::DestroyInstanceInternal()
 	bool output = true;
 
 	CleanupSwapChain();
-
-	TEST_MODEL.Cleanup();
 
 	vkDestroyDescriptorSetLayout( vulkanDevice, descriptorSetLayout, nullptr );
 
@@ -1096,7 +1095,7 @@ void VulkanGraphicsInstance::CreateDescriptorPool()
 
 void VulkanGraphicsInstance::CreateDescriptorSets()
 {
-	TEST_MODEL.CreateDescriptorSets();
+	//TEST_MODEL.CreateDescriptorSets();
 }
 
 void VulkanGraphicsInstance::CreateImageSamplerDescriptorSet( std::vector<VkDescriptorSet>& DescriptorSetVector, VkImageView TextureImageView, VkSampler TextureSampler )
@@ -1185,7 +1184,10 @@ void VulkanGraphicsInstance::CreateCommandBuffers()
 
 		vkCmdBeginRenderPass( commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE );
 
-		TEST_MODEL.BindToCommandBuffer( commandBuffers[i], graphicsPipeline, pipelineLayout, i );
+		for ( Model* pModel : renderObjects )
+		{
+			pModel->BindToCommandBuffer( commandBuffers[i], graphicsPipeline, pipelineLayout, i );
+		}
 
 		vkCmdEndRenderPass( commandBuffers[i] );
 
@@ -1474,6 +1476,17 @@ void VulkanGraphicsInstance::UpdateUniformBuffer( uint32_t currentImage )
 	vkMapMemory( vulkanDevice, UniformBuffersMemory[currentImage], 0, sizeof( ubo ), 0, &data );
 	memcpy( data, &ubo, sizeof( ubo ) );
 	vkUnmapMemory( vulkanDevice, UniformBuffersMemory[currentImage] );
+}
+
+//////////////////////////////
+// Public Functions
+//////////////////////////////
+
+void VulkanGraphicsInstance::InitializeModel( Model* pModel, const char* filename )
+{
+	pModel->Initialize( this, filename );
+
+	renderObjects.push_back( pModel );
 }
 
 #ifdef _DEBUG

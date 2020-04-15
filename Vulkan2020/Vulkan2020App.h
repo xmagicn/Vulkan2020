@@ -18,6 +18,8 @@
 
 #include "GLFWRenderWindowClass.h"
 
+#include "ModelClass.h"
+
 const int WIDTH = 800;
 const int HEIGHT = 600;
 
@@ -66,6 +68,10 @@ private:
 		pGraphicsInstance->PreInitInstance( extensions );
 
 		pGraphicsInstance->InitInstance( pRenderWindow );
+
+		Init();
+
+		pGraphicsInstance->FinalizeInit();
 	}
 
 	static void FramebufferResizeCallback( GLFWwindow* window, int, int )
@@ -89,6 +95,7 @@ private:
 		while ( !pRenderWindow->WindowShouldClose() )
 		{
 			pRenderWindow->PollEvents();
+			Update();
 			pGraphicsInstance->DrawFrame();
 		}
 
@@ -97,6 +104,8 @@ private:
 
 	void Cleanup()
 	{
+		Destroy();
+
 		pGraphicsInstance->DestroyInstance();
 		delete pGraphicsInstance;
 		pGraphicsInstance = nullptr;
@@ -137,5 +146,22 @@ private:
 		std::vector<const char*> extensions( glfwExtensions, glfwExtensions + glfwExtensionCount );
 
 		return extensions;
+	}
+
+	Model TestCactus;
+
+	void Init()
+	{
+		pGraphicsInstance->InitializeModel( &TestCactus, "../assets/models/Cactus_4.obj" );
+	}
+
+	void Update()
+	{
+
+	}
+
+	void Destroy()
+	{
+		TestCactus.Cleanup();
 	}
 };

@@ -4,12 +4,12 @@
 
 #include <optional>
 #include <vector>
+#include <glm/glm.hpp>
 
 #include "vulkan/vulkan.h"
 
-#include "ModelClass.h"
-
 class Texture;
+class Model;
 
 struct QueueFamilyIndices
 {
@@ -158,6 +158,9 @@ private:
 // Public Functions
 /////////////////////////////////////////
 public:
+	void InitializeModel( Model* pModel, const char* filename );
+
+	void FinalizeInit(); // TODO remove
 
 /////////////////////////////////////////
 // Debug Functions
@@ -226,11 +229,9 @@ private:
 
 	std::vector<const char*> extensions;
 
+	std::vector<Model*> renderObjects;
+
 #ifdef _DEBUG
 	VkDebugUtilsMessengerEXT debugMessenger;
 #endif
-
-	void InitializeRenderObjects() { TEST_MODEL.Initialize( this ); }
-
-	Model TEST_MODEL;
 };
