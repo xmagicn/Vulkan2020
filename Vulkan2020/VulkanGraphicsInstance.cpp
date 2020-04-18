@@ -13,6 +13,8 @@
 #include "RenderWindowClass.h"
 #include "FileUtils.h"
 
+#include "ShaderClass.h"
+
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
 };
@@ -697,23 +699,23 @@ void VulkanGraphicsInstance::CreateDescriptorSetLayout()
 
 void VulkanGraphicsInstance::CreateGraphicsPipeline()
 {
-	auto vertShaderCode = FileUtils::ReadFile( "shaders/vert.spv" );
-	auto fragShaderCode = FileUtils::ReadFile( "shaders/frag.spv" );
+	VulkanVertexShader vertexShader(this, "shaders/vert.spv" );
+	VulkanFragmentShader fragmentShader( this, "shaders/frag.spv" );
 
-	VkShaderModule vertShaderModule = CreateShaderModule( vertShaderCode );
-	VkShaderModule fragShaderModule = CreateShaderModule( fragShaderCode );
+	//auto fragShaderCode = FileUtils::ReadFile( "shaders/frag.spv" );
 
-	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
-	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-	vertShaderStageInfo.module = vertShaderModule;
-	vertShaderStageInfo.pName = "main";
+	//VkShaderModule fragShaderModule = CreateShaderModule( fragShaderCode );
 
+	VkPipelineShaderStageCreateInfo vertShaderStageInfo = vertexShader.GetCreateInfo();
+	VkPipelineShaderStageCreateInfo fragShaderStageInfo = fragmentShader.GetCreateInfo();
+
+	/*
 	VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
 	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 	fragShaderStageInfo.module = fragShaderModule;
 	fragShaderStageInfo.pName = "main";
+	//*/
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
@@ -825,8 +827,8 @@ void VulkanGraphicsInstance::CreateGraphicsPipeline()
 		throw std::runtime_error( "failed to create graphics pipeline!" );
 	}
 
-	vkDestroyShaderModule( vulkanDevice, fragShaderModule, nullptr );
-	vkDestroyShaderModule( vulkanDevice, vertShaderModule, nullptr );
+	//vkDestroyShaderModule( vulkanDevice, fragShaderModule, nullptr );
+	//vkDestroyShaderModule( vulkanDevice, vertShaderModule, nullptr );
 }
 
 VkShaderModule VulkanGraphicsInstance::CreateShaderModule( const std::vector<char>& code )

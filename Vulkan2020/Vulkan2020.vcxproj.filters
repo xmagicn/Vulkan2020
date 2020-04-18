@@ -18,6 +18,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>Model</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vulkan2020App.h" />
@@ -41,6 +44,12 @@
     <ClInclude Include="GLFWRenderWindowClass.h">
       <Filter>GLFW</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderClass.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCommon.h">
+      <Filter>VulkanAPI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -61,6 +70,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\shader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\colorFrag.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

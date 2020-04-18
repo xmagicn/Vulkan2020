@@ -160,21 +160,27 @@
     <ClCompile Include="GraphicsInstance.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="VulkanAPI.cpp" />
     <ClCompile Include="VulkanGraphicsInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="GLFWRenderWindowClass.h" />
+    <ClInclude Include="GraphicsCommon.h" />
     <ClInclude Include="GraphicsInstance.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="RenderWindowClass.h" />
+    <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="TextureClass.h" />
     <ClInclude Include="Vulkan2020App.h" />
     <ClInclude Include="VulkanAPI.h" />
     <ClInclude Include="VulkanGraphicsInstance.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\colorFrag.frag">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="Shaders\shader.frag">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
