@@ -75,5 +75,8 @@
     <None Include="Shaders\colorFrag.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\textureFrag.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

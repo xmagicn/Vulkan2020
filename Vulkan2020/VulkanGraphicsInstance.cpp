@@ -700,22 +700,12 @@ void VulkanGraphicsInstance::CreateDescriptorSetLayout()
 void VulkanGraphicsInstance::CreateGraphicsPipeline()
 {
 	VulkanVertexShader vertexShader(this, "shaders/vert.spv" );
-	VulkanFragmentShader fragmentShader( this, "shaders/frag.spv" );
-
-	//auto fragShaderCode = FileUtils::ReadFile( "shaders/frag.spv" );
-
-	//VkShaderModule fragShaderModule = CreateShaderModule( fragShaderCode );
+	//VulkanFragmentShader fragmentShader( this, "shaders/frag.spv" );
+	VulkanFragmentShader fragmentShader( this, "shaders/colorFrag.spv" );
+	//VulkanFragmentShader fragmentShader( this, "shaders/textureFrag.spv" );
 
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo = vertexShader.GetCreateInfo();
 	VkPipelineShaderStageCreateInfo fragShaderStageInfo = fragmentShader.GetCreateInfo();
-
-	/*
-	VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
-	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	fragShaderStageInfo.module = fragShaderModule;
-	fragShaderStageInfo.pName = "main";
-	//*/
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
@@ -826,9 +816,6 @@ void VulkanGraphicsInstance::CreateGraphicsPipeline()
 	{
 		throw std::runtime_error( "failed to create graphics pipeline!" );
 	}
-
-	//vkDestroyShaderModule( vulkanDevice, fragShaderModule, nullptr );
-	//vkDestroyShaderModule( vulkanDevice, vertShaderModule, nullptr );
 }
 
 VkShaderModule VulkanGraphicsInstance::CreateShaderModule( const std::vector<char>& code )

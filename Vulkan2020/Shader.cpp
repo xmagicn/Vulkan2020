@@ -1,5 +1,7 @@
 #include "ShaderClass.h"
 
+#pragma warning( disable : 4189 )
+
 #include "FileUtils.h"
 #include "VulkanGraphicsInstance.h"
 
